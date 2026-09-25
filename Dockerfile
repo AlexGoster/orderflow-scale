@@ -16,6 +16,9 @@ COPY alembic.ini ./
 COPY alembic ./alembic
 COPY scripts ./scripts
 
+# sqlite-смоук в CI пишет smoke.db в /app — рабочий каталог должен принадлежать app
+RUN chown -R app:app /app
+
 USER app
 EXPOSE 8000
 

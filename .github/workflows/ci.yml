@@ -58,7 +58,13 @@ jobs:
             -e RATE_LIMIT_BACKEND=memory \
             -e UVICORN_WORKERS=1 \
             orderflow-scale:${{ github.sha }}
-          sleep 15
-          curl -f http://localhost:8000/health
-          curl -f http://localhost:8000/metrics | grep -q http_requests_total
+          for i in $(seq 1 30); do
+            if curl -fsS http://localhost:8000/health > /dev/null 2>&1; then
+              echo "api is up after ${i} attempt(s)"
+              break
+            fi
+            sleep 2
+          done
+          curl -fsS http://localhost:8000/health
+          curl -fsS http://localhost:8000/metrics | grep -q http_requests_total
           docker logs api

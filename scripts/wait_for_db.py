@@ -7,6 +7,9 @@ import sys
 
 async def main() -> int:
     url = os.environ.get("DATABASE_URL", "")
+    if url.startswith("sqlite"):
+        # sqlite работает в файловом режиме — TCP-ожидание не требуется
+        return 0
     host = "localhost"
     port = 5432
     if "@" in url and "//" in url:
