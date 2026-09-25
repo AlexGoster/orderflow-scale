@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "orderflow-scale"
 version = "2.0.0"
-description = "OrderFlow Scale — кэширование, оптимизация запросов и мониторинг REST API"
+description = "OrderFlow Scale вЂ” РєСЌС€РёСЂРѕРІР°РЅРёРµ, РѕРїС‚РёРјРёР·Р°С†РёСЏ Р·Р°РїСЂРѕСЃРѕРІ Рё РјРѕРЅРёС‚РѕСЂРёРЅРі REST API"
 readme = "README.md"
 license = { file = "LICENSE" }
 requires-python = ">=3.11"
@@ -46,13 +46,13 @@ target-version = "py311"
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "UP", "B", "SIM"]
 ignore = [
-    "B008",  # Depends()/Query() в дефолтах — идиоматично для FastAPI
+    "B008",  # Depends()/Query() РІ РґРµС„РѕР»С‚Р°С… вЂ” РёРґРёРѕРјР°С‚РёС‡РЅРѕ РґР»СЏ FastAPI
 ]
 
 [tool.mypy]
 python_version = "3.12"
 strict = true
-plugins = ["pydantic.mypy", "sqlalchemy.ext.mypy.plugin"]
+plugins = ["pydantic.mypy"]
 
 [[tool.mypy.overrides]]
 module = ["fakeredis.*", "locust.*"]
