@@ -1,0 +1,37 @@
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+
+# Virtual envs
+.venv/
+venv/
+
+# Env & secrets
+.env
+*.pem
+*.key
+
+# Coverage
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+
+# Local databases & generated artifacts
+*.db
+*.sqlite3
+smoke.db
+_alembic_*.db
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+
+# Load-test reports
+locust_stats*
+locust_report*
+test_results/
