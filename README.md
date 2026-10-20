@@ -1,5 +1,7 @@
 # OrderFlow Scale
 
+[Проверенный запуск и ограничения](VERIFICATION.md).
+
 [![CI](https://github.com/AlexGoster/orderflow-scale/actions/workflows/ci.yml/badge.svg)](https://github.com/AlexGoster/orderflow-scale/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/python-3.11%2B-blue)
 ![Coverage](https://img.shields.io/badge/coverage-92%25-brightgreen)
@@ -61,7 +63,7 @@ locust -f tests/load/locustfile.py --headless -u 200 -r 20 -t 60s --host http://
 
 ## Стек
 
-FastAPI · SQLAlchemy 2.0 (async) · Redis (кэш + rate limit; in-memory фолбэк для тестов) · Prometheus + Grafana · Locust · Alembic · pytest (70 тестов) · GitHub Actions
+FastAPI · SQLAlchemy 2.0 (async) · Redis (кэш + rate limit; in-memory фолбэк для тестов) · Prometheus + Grafana · Locust · Alembic · pytest (75 тестов) · GitHub Actions
 
 ## Запуск
 
@@ -81,7 +83,7 @@ pytest --cov=app
 
 ## Тесты
 
-**70 тестов, покрытие 92%**: HIT/MISS/инвалидация кэша, TTL, версионирование ключей, ETag/304, rate limit (429, слайдинг-окно, per-client), метрики `/metrics`, auth/orders. CI: `ruff → mypy (strict) → pytest --cov → docker build`.
+**75 тестов**: HIT/MISS/инвалидация кэша, TTL, версионирование ключей, ETag/304, rate limit (429, слайдинг-окно, per-client), метрики `/metrics`, auth/orders. CI: `ruff → mypy (strict) → pytest --cov → docker build`.
 
 ## Как дальше до production
 
