@@ -83,6 +83,12 @@ pytest --cov=app
 
 ## Тесты
 
+Ограничение запросов использует адрес клиента из ASGI-соединения. Приложение
+не доверяет сырому `X-Forwarded-For`: смена заголовка не сбрасывает квоту.
+За обратным прокси настройте доверенные адреса через Uvicorn
+`--forwarded-allow-ips` (или `FORWARDED_ALLOW_IPS`) и исключите прямой доступ
+к API в обход этого прокси. Uvicorn передаст проверенный адрес в ASGI.
+
 **75 тестов**: HIT/MISS/инвалидация кэша, TTL, версионирование ключей, ETag/304, rate limit (429, слайдинг-окно, per-client), метрики `/metrics`, auth/orders. CI: `ruff → mypy (strict) → pytest --cov → docker build`.
 
 ## Как дальше до production

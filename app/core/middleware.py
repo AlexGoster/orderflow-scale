@@ -27,9 +27,8 @@ def normalize_path(path: str) -> str:
 
 
 def client_key(request: Request) -> str:
-    forwarded = request.headers.get("x-forwarded-for")
-    if forwarded:
-        return forwarded.split(",")[0].strip()
+    # Uvicorn resolves trusted proxy headers into scope.client. Raw HTTP headers
+    # are caller-controlled and must not select a new rate-limit bucket.
     if request.client is not None:
         return request.client.host
     return "unknown"
