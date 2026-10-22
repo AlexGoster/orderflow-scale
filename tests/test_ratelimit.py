@@ -1,7 +1,7 @@
 from typing import Any
 
 import fakeredis
-from httpx import AsyncClient
+from httpx import ASGITransport, AsyncClient
 
 from app.core.ratelimit import (
     InMemoryRateLimitStore,
@@ -42,7 +42,13 @@ async def test_rate_limit_is_scoped_per_client(client: AsyncClient) -> None:
     assert (await client.get("/api/v1/products", headers=blocked_client)).status_code == 200
     assert (await client.get("/api/v1/products", headers=blocked_client)).status_code == 429
 
-    other = await client.get("/api/v1/products", headers={"X-Forwarded-For": "198.51.100.11"})
+    # A caller cannot acquire a new quota by changing a raw forwarded header.
+    forged = await client.get("/api/v1/products", headers={"X-Forwarded-For": "198.51.100.11"})
+    assert forged.status_code == 429
+    async with AsyncClient(
+        transport=ASGITransport(app=app, client=("198.51.100.11", 12345)), base_url="http://test"
+    ) as other_client:
+        other = await other_client.get("/api/v1/products")
     assert other.status_code == 200
     assert other.headers["X-RateLimit-Limit"] == "2"
     assert other.headers["X-RateLimit-Remaining"] == "1"
