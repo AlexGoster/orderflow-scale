@@ -35,3 +35,8 @@ _alembic_*.db
 locust_stats*
 locust_report*
 test_results/
+
+# Local verification artifacts
+*.egg-info/
+build/
+dist/

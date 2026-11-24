@@ -1,6 +1,8 @@
 from datetime import datetime
+from decimal import Decimal
+from typing import Self
 
-from pydantic import BaseModel, ConfigDict, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, model_validator
 
 from app.models import OrderStatus
 
@@ -29,17 +31,23 @@ class ProductCreate(BaseModel):
     sku: str = Field(min_length=1, max_length=64)
     name: str = Field(min_length=1, max_length=255)
     category: str = Field(default="general", min_length=1, max_length=64)
-    price: float = Field(gt=0)
-    stock: int = Field(default=0, ge=0)
+    price: Decimal = Field(gt=0, max_digits=10, decimal_places=2)
+    stock: int = Field(default=0, ge=0, le=2_147_483_647)
     is_active: bool = True
 
 
 class ProductUpdate(BaseModel):
     name: str | None = Field(default=None, min_length=1, max_length=255)
     category: str | None = Field(default=None, min_length=1, max_length=64)
-    price: float | None = Field(default=None, gt=0)
+    price: Decimal | None = Field(default=None, gt=0, max_digits=10, decimal_places=2)
     stock: int | None = Field(default=None, ge=0)
     is_active: bool | None = None
+
+    @model_validator(mode="after")
+    def reject_nulls(self) -> Self:
+        if any(getattr(self, field) is None for field in self.model_fields_set):
+            raise ValueError("Product fields cannot be null")
+        return self
 
 
 class ProductRead(BaseModel):

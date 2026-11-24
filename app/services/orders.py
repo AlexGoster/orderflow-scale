@@ -1,11 +1,11 @@
 from decimal import Decimal
 
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload, selectinload
 
 from app.core.exceptions import AppError, NotFoundError
-from app.models import Order, OrderItem, OrderStatus
+from app.models import Order, OrderItem, OrderStatus, Product
 from app.schemas import OrderCreate
 from app.services.products import get_products_by_ids
 
@@ -43,7 +43,17 @@ async def create_order(session: AsyncSession, user_id: int, payload: OrderCreate
     for product_id in sorted(needed):
         quantity = needed[product_id]
         product = products[product_id]
-        product.stock -= quantity
+        reserved = await session.scalar(
+            update(Product)
+            .where(Product.id == product_id, Product.stock >= quantity)
+            .values(stock=Product.stock - quantity)
+            .returning(Product.id)
+            .execution_options(synchronize_session=False)
+        )
+        if reserved is None:
+            raise AppError(
+                f"Insufficient stock for {product.sku}", code="insufficient_stock", status_code=409
+            )
         total += Decimal(str(product.price)) * quantity
         session.add(
             OrderItem(
@@ -55,6 +65,10 @@ async def create_order(session: AsyncSession, user_id: int, payload: OrderCreate
         )
 
     order.total = total
+    if total > Decimal("99999999.99"):
+        raise AppError(
+            "Order total exceeds supported amount", code="invalid_total", status_code=422
+        )
     await session.commit()
 
     # Возвращаем заказ с позициями: один явный SELECT ... options(selectinload),
@@ -92,11 +106,10 @@ async def get_order(session: AsyncSession, user_id: int, order_id: int) -> Order
     return order
 
 
-async def change_order_status(session: AsyncSession, order_id: int, status: OrderStatus) -> Order:
-    stmt = select(Order).where(Order.id == order_id).options(selectinload(Order.items))
-    order = await session.scalar(stmt)
-    if order is None:
-        raise NotFoundError("Order not found")
+async def change_order_status(
+    session: AsyncSession, user_id: int, order_id: int, status: OrderStatus
+) -> Order:
+    order = await get_order(session, user_id, order_id)
     order.status = status
     await session.commit()
     return order

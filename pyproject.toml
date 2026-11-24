@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "orderflow-scale"
 version = "2.0.0"
-description = "OrderFlow Scale вЂ” РєСЌС€РёСЂРѕРІР°РЅРёРµ, РѕРїС‚РёРјРёР·Р°С†РёСЏ Р·Р°РїСЂРѕСЃРѕРІ Рё РјРѕРЅРёС‚РѕСЂРёРЅРі REST API"
+description = "OrderFlow Scale — кэширование, оптимизация запросов и мониторинг REST API"
 readme = "README.md"
 license = { file = "LICENSE" }
 requires-python = ">=3.11"

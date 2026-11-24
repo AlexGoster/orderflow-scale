@@ -48,4 +48,4 @@ async def change_status(
     user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> Order:
-    return await orders_service.change_order_status(session, order_id, new_status)
+    return await orders_service.change_order_status(session, user.id, order_id, new_status)
